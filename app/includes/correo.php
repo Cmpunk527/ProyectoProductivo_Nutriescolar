@@ -34,8 +34,8 @@ if (file_exists(__DIR__ . '/config.local.php')) {
 defined('SMTP_HOST')        || define('SMTP_HOST', 'smtp.gmail.com');
 defined('SMTP_PUERTO')      || define('SMTP_PUERTO', 587);          // 587 = TLS · 465 = SSL
 defined('SMTP_SEGURIDAD')   || define('SMTP_SEGURIDAD', 'tls');     // 'tls' o 'ssl'
-defined('SMTP_USUARIO')     || define('SMTP_USUARIO', 'tu_correo@gmail.com');
-defined('SMTP_PASSWORD')    || define('SMTP_PASSWORD', '');
+defined('SMTP_USUARIO')     || define('SMTP_USUARIO', 'carrilloleonjuandavid45@gmail.com');
+defined('SMTP_PASSWORD')    || define('SMTP_PASSWORD', 'vicd aiwt wkxr fpoh');
 defined('SMTP_NOMBRE_FROM') || define('SMTP_NOMBRE_FROM', 'NutriEscolar');
 
 require_once __DIR__ . '/PHPMailer/Exception.php';
