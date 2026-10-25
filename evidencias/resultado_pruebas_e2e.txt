@@ -1,0 +1,42 @@
+PASS index carga
+PASS ver-menu sin sesión -> login
+PASS admin-panel sin sesión -> login
+PASS registro de estudiante guarda
+PASS Usuario+Estudiante+Acudiente+Curso enlazados en la BD
+PASS correo repetido es rechazado
+PASS registro de profesor guarda
+PASS login con clave mala es rechazado
+PASS estudiante inicia sesión
+PASS estudiante NO entra al panel admin (vuelve a su pantalla)
+PASS registrar-consumo muestra el menú del día
+PASS registrar-consumo guarda
+PASS 2 alimentos guardados en ConsumoAlimento
+PASS consultar-consumo evalúa nutrientes
+PASS sin SMTP configurado el reporte falla con mensaje (sin error fatal)
+PASS consultar-menu muestra los alimentos
+PASS informacion-nutricional (JOIN 2 tablas)
+PASS cerrar sesión funciona
+PASS admin inicia sesión
+PASS registrar-alimentos guarda
+PASS alimento en Alimento + ficha en InformacionNutricional
+PASS alimento repetido es rechazado
+PASS editar-nutricion autocompleta con los valores actuales
+PASS editar-nutricion guarda
+PASS valor actualizado en BD
+PASS crear-menu guarda
+PASS menú de la misma fecha es rechazado
+PASS contador muestra 4 por agregar
+PASS asignar-menu agrega 4 alimentos de una vez
+PASS 4 filas en MenuAlimento
+PASS modificar-menu carga los 4 alimentos marcados
+PASS modificar-menu agrega 1 y quita 1
+PASS eliminar-alimentos funciona
+PASS sin alimento ni ficha huérfana
+PASS recuperar contraseña sin SMTP: mensaje claro (sin error fatal)
+PASS el token quedó registrado en BD
+PASS enlace del correo permite definir nueva contraseña
+PASS el enlace no se puede reutilizar
+PASS login con la contraseña NUEVA funciona
+PASS sin errores de JavaScript en el navegador
+
+RESULTADO: 40/40 pruebas correctas
