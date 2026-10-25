@@ -85,7 +85,7 @@ El sistema se probó de punta a punta (registro, inicio de sesión por rol, CRUD
 
 ## Documentación
 
-- [Documento Base](docs/Documento_Base.docx)
+- [Documento Base](docs/Proyecto_Productivo_Modelo.docx)
 - [Manual Técnico](docs/Manual_Tecnico.docx)
 - [Manual de Usuario](docs/Manual_Usuario.docx)
 
