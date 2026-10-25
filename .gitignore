@@ -1,0 +1,15 @@
+# Archivos de configuración local o secretos (contraseñas, correo SMTP)
+.env
+config.local.php
+
+# Archivos temporales y registros
+*.log
+tmp/
+.cache/
+
+# Configuración del editor
+.vscode/settings.json
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store
