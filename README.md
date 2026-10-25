@@ -14,9 +14,9 @@ Las instituciones educativas que ofrecen alimentación escolar necesitan saber q
 
 ## Integrantes
 
-- [Estudiante 1 – completar]
-- [Estudiante 2 – completar]
-- [Estudiante 3 – completar]
+- Juan David Carrillo Leon 
+- Tomas Leonardo España Muñoz
+- Aiderson Julio Chiquillo
 
 ## Institución
 
