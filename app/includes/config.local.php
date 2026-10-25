@@ -20,8 +20,8 @@
 // ---- Correo (SMTP) para recuperar contraseña y enviar reportes ----
 // Con Gmail necesitas una "Contraseña de aplicación":
 //   https://myaccount.google.com/apppasswords  (requiere verificación en dos pasos)
-define('SMTP_USUARIO',  'tu_correo@gmail.com');
-define('SMTP_PASSWORD', 'xxxx xxxx xxxx xxxx');
+define('SMTP_USUARIO',  'carrilloleonjuandavid45@gmail.com');
+define('SMTP_PASSWORD', 'vicd aiwt wkxr fpoh');
 // define('SMTP_HOST',      'smtp.gmail.com');
 // define('SMTP_PUERTO',    587);
 // define('SMTP_SEGURIDAD', 'tls');
