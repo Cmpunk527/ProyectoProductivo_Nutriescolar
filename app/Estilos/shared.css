@@ -1,0 +1,718 @@
+/* ===== NutriEscolar – Shared Styles ===== */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --naranja:#f7a600;
+  --naranja-oscuro:#d48e00;
+  --naranja-claro:#fff3d4;
+  --blanco:#ffffff;
+  --gris:#f4f4f4;
+  --gris-borde:#e0e0e0;
+  --texto:#1a1a1a;
+  --texto-suave:#555;
+  --sombra-card:0 8px 32px rgba(0,0,0,0.18);
+  --rojo-error:#e53935;
+}
+
+body{
+  font-family:'Nunito','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:var(--gris);
+  color:var(--texto);
+  min-height:100vh;
+}
+
+/* ===== NAVBAR ===== */
+.navbar{
+  position:fixed;
+  top:0;left:0;width:100%;
+  z-index:100;
+  height:70px;
+  background:var(--naranja);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 40px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.15);
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+}
+
+.nav-logo-icono{
+  width:40px;height:40px;
+  background:white;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;
+  color:var(--naranja);
+  flex-shrink:0;
+  letter-spacing:-1px;
+}
+
+.nav-logo-nombre{
+  font-size:20px;font-weight:800;
+  color:white;
+}
+
+.nav-menu{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.nav-menu a{
+  text-decoration:none;
+  color:white;
+  font-size:13px;
+  font-weight:600;
+  padding:7px 14px;
+  border-radius:18px;
+  transition:background 0.2s;
+  white-space:nowrap;
+}
+
+.nav-menu a:hover{
+  background:rgba(255,255,255,0.2);
+}
+
+.nav-menu .btn-salir{
+  background:rgba(0,0,0,0.15);
+  margin-left:6px;
+}
+
+.nav-menu .btn-salir:hover{
+  background:rgba(0,0,0,0.28);
+}
+
+/* Menú hamburguesa (oculto en desktop) */
+.hamburger{
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  cursor:pointer;
+  padding:6px;
+  border:none;
+  background:transparent;
+}
+
+.hamburger span{
+  display:block;
+  width:24px;height:2px;
+  background:white;
+  border-radius:2px;
+  transition:transform 0.3s, opacity 0.3s;
+}
+
+/* ===== HERO / FONDO ===== */
+.hero{
+  min-height:100vh;
+  padding-top:70px;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.52),rgba(0,0,0,0.52)),
+    url('../Imagenes/Alimentacion_escolar_Bogota_1.jpg');
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding-left:16px;
+  padding-right:16px;
+  padding-bottom:30px;
+}
+
+/* ===== CARD CENTRAL ===== */
+.card{
+  width:100%;
+  max-width:500px;
+  background:white;
+  padding:40px;
+  border-radius:18px;
+  box-shadow:var(--sombra-card);
+}
+
+.card h1{
+  text-align:center;
+  font-size:24px;
+  font-weight:800;
+  color:var(--texto);
+  margin-bottom:28px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--gris-borde);
+}
+
+/* ===== INPUTS FLOTANTES (login/registro/olvido) ===== */
+.campo{
+  position:relative;
+  border-bottom:2px solid #ccc;
+  margin:28px 0;
+}
+
+.campo input{
+  width:100%;
+  padding:4px 5px;
+  height:42px;
+  font-size:15px;
+  border:none;
+  background:none;
+  outline:none;
+  font-family:inherit;
+  color:var(--texto);
+}
+
+.campo label{
+  position:absolute;
+  top:50%;
+  left:5px;
+  color:#aaa;
+  transform:translateY(-50%);
+  font-size:15px;
+  pointer-events:none;
+  transition:top 0.25s, font-size 0.25s, color 0.25s;
+}
+
+.campo::after{
+  content:'';
+  position:absolute;
+  bottom:-2px;left:0;
+  width:0;height:2px;
+  background:var(--naranja);
+  transition:width 0.35s;
+}
+
+.campo:focus-within::after{width:100%;}
+
+.campo input:focus ~ label,
+.campo input:valid ~ label{
+  top:-6px;
+  font-size:12px;
+  color:var(--naranja-oscuro);
+}
+
+/* Select dentro de campo flotante */
+.campo select{
+  width:100%;
+  padding:10px 5px 10px 0;
+  border:none;
+  background:none;
+  outline:none;
+  font-size:15px;
+  font-family:inherit;
+  color:var(--texto);
+  margin-top:6px;
+}
+
+/* ===== INPUTS NORMALES (hero forms) ===== */
+.filtros,
+.formulario{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.filtros input,
+.filtros select,
+.formulario input,
+.formulario select{
+  width:100%;
+  padding:12px 14px;
+  border:none;
+  border-bottom:2px solid #ccc;
+  outline:none;
+  font-size:14px;
+  font-family:inherit;
+  background:none;
+  transition:border-color 0.2s;
+}
+
+.filtros input:focus,
+.filtros select:focus,
+.formulario input:focus,
+.formulario select:focus{
+  border-bottom-color:var(--naranja);
+}
+
+/* ===== VALIDACIONES DE FORMULARIO (js/validaciones.js) ===== */
+.campo input.campo-invalido,
+.formulario input.campo-invalido,
+.filtros input.campo-invalido,
+.formulario select.campo-invalido{
+  border-bottom-color:var(--rojo-error) !important;
+  animation:sacudida 0.3s;
+}
+
+.campo label.label-error{
+  color:var(--rojo-error) !important;
+}
+
+.mensaje-error{
+  color:var(--rojo-error);
+  font-size:12.5px;
+  margin:-8px 0 10px 2px;
+  min-height:16px;
+  font-weight:600;
+}
+
+@keyframes sacudida{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-4px);}
+  75%{transform:translateX(4px);}
+}
+
+/* ===== BOTONES ===== */
+.btn{
+  display:block;
+  width:100%;
+  padding:13px;
+  border:none;
+  background:var(--naranja);
+  color:white;
+  border-radius:10px;
+  font-size:15px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+  transition:background 0.2s, transform 0.15s;
+  margin-top:6px;
+}
+
+.btn:hover{
+  background:var(--naranja-oscuro);
+  transform:translateY(-1px);
+}
+
+.btn-volver{
+  background:transparent;
+  border:2px solid var(--naranja);
+  color:var(--naranja);
+}
+
+.btn-volver:hover{
+  background:var(--naranja-claro);
+  transform:translateY(-1px);
+}
+
+.btn-peligro{
+  background:#e53935;
+}
+
+.btn-peligro:hover{
+  background:#c62828;
+}
+
+/* ===== INFO BOXES (resultados) ===== */
+.info-box{
+  background:var(--gris);
+  padding:16px 18px;
+  border-radius:10px;
+  border-left:5px solid var(--naranja);
+  margin-bottom:10px;
+}
+
+.info-box .etiqueta{
+  font-size:12px;
+  font-weight:700;
+  color:var(--naranja-oscuro);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:4px;
+}
+
+.info-box .valor{
+  font-size:15px;
+  color:var(--texto);
+  font-weight:600;
+}
+
+/* ===== LINKS SECUNDARIOS ===== */
+.link-secundario{
+  text-align:center;
+  font-size:14px;
+  margin-top:18px;
+  color:var(--texto-suave);
+}
+
+.link-secundario a{
+  color:var(--naranja-oscuro);
+  font-weight:700;
+  text-decoration:none;
+}
+
+.link-secundario a:hover{text-decoration:underline;}
+
+/* ===== RESULTADO OCULTO ===== */
+.resultado{display:none;flex-direction:column;gap:10px;margin-top:10px;}
+
+/* ===== PANEL ADMIN - GRID ===== */
+.panel-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.panel-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  background:var(--gris);
+  border:2px solid transparent;
+  border-radius:14px;
+  padding:24px 16px;
+  text-align:center;
+  transition:border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.panel-btn:hover{
+  border-color:var(--naranja);
+  background:var(--naranja-claro);
+  transform:translateY(-3px);
+}
+
+.panel-btn .panel-icono{
+  width:48px;height:48px;
+  background:var(--naranja-claro);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.panel-btn .panel-icono svg{
+  width:26px;height:26px;
+  stroke:var(--naranja-oscuro);fill:none;stroke-width:2;
+}
+
+.panel-btn span{
+  font-size:13px;
+  font-weight:700;
+  color:var(--texto);
+  line-height:1.3;
+}
+
+/* ===== VER MENU – SLIDER ===== */
+.slider-wrap{
+  width:100%;
+  overflow:hidden;
+  position:relative;
+}
+
+.slider-track{
+  display:flex;
+  transition:margin-left 0.5s ease;
+}
+
+.slide-item{
+  min-width:100%;
+  position:relative;
+}
+
+.slide-item img{
+  width:100%;
+  height:420px;
+  object-fit:cover;
+  display:block;
+  filter:brightness(0.6);
+}
+
+.slide-texto{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  color:white;
+  width:90%;
+  max-width:1000px;
+  text-shadow:1px 2px 12px rgba(0,0,0,0.85);
+}
+
+.slide-texto h2{font-size:48px;font-weight:800;margin-bottom:16px;}
+.slide-texto p{font-size:22px;font-weight:600;line-height:1.6;}
+
+/* ===== MENU DIA RESULTADO ===== */
+.menu-dia{
+  background:var(--gris);
+  padding:20px;
+  border-radius:12px;
+  border-left:5px solid var(--naranja);
+}
+
+.menu-dia h2{
+  color:var(--naranja);
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.menu-dia ul{padding-left:18px;}
+.menu-dia li{margin-bottom:6px;font-size:14px;}
+.menu-dia .fecha{font-size:13px;color:#888;margin-bottom:8px;}
+
+/* ===== SEARCH BOX ===== */
+.search-box{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.search-box input{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-bottom:2px solid #ccc;
+  outline:none;
+  font-size:14px;
+  font-family:inherit;
+  transition:border-color 0.2s;
+}
+
+.search-box input:focus{border-bottom-color:var(--naranja);}
+
+.search-box button{
+  padding:12px 18px;
+  border:none;
+  background:var(--naranja);
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:700;
+  font-family:inherit;
+  font-size:14px;
+  transition:background 0.2s;
+  white-space:nowrap;
+}
+
+.search-box button:hover{background:var(--naranja-oscuro);}
+
+/* ===== NOMBRE RESULTADO ===== */
+.nombre-resultado{
+  text-align:center;
+  font-size:22px;
+  font-weight:800;
+  color:var(--texto);
+  margin-bottom:12px;
+  padding-bottom:10px;
+  border-bottom:2px solid var(--gris-borde);
+}
+
+.fecha-resultado{
+  text-align:center;
+  font-size:13px;
+  color:#888;
+  margin-bottom:14px;
+}
+
+/* ===== FOOTER MINI ===== */
+.footer-mini{
+  background:#1a1a1a;
+  color:rgba(255,255,255,0.5);
+  text-align:center;
+  padding:18px;
+  font-size:12px;
+}
+
+/* ===== TAG ===== */
+.tag{
+  display:inline-block;
+  background:var(--naranja-claro);
+  color:var(--naranja-oscuro);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:5px 14px;
+  border-radius:14px;
+  margin-bottom:14px;
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+
+/* Tablet (≤ 900px) */
+@media(max-width:900px){
+  .navbar{padding:0 20px;}
+  .nav-menu a{font-size:12px;padding:6px 10px;}
+  .card{padding:32px 28px;}
+  .slide-texto h2{font-size:36px;}
+  .slide-texto p{font-size:19px;}
+  .panel-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* Móvil (≤ 640px) */
+@media(max-width:640px){
+  .navbar{padding:0 16px;}
+
+  /* Mostrar hamburguesa, ocultar menú */
+  .hamburger{display:flex;}
+
+  .nav-menu{
+    display:none;
+    position:fixed;
+    top:70px;left:0;right:0;
+    background:var(--naranja);
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    padding:10px 0 16px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.18);
+    z-index:99;
+  }
+
+  .nav-menu.abierto{display:flex;}
+
+  .nav-menu a{
+    padding:14px 24px;
+    border-radius:0;
+    font-size:15px;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+
+  .nav-menu .btn-salir{
+    margin:10px 24px 0;
+    border-radius:10px;
+    background:rgba(0,0,0,0.18);
+  }
+
+  .card{
+    padding:24px 18px;
+    border-radius:14px;
+    margin:16px 0;
+  }
+
+  .card h1{font-size:20px;margin-bottom:20px;}
+
+  .hero{
+    padding-top:80px;
+    padding-bottom:24px;
+    align-items:flex-start;
+    background-attachment:scroll;
+  }
+
+  .panel-grid{grid-template-columns:1fr;}
+
+  .search-box{flex-direction:column;}
+  .search-box button{width:100%;}
+
+  .slide-item img{height:280px;}
+  .slide-texto h2{font-size:28px;margin-bottom:8px;}
+  .slide-texto p{font-size:17px;}
+
+  .campo{margin:22px 0;}
+}
+
+/* Muy pequeño (≤ 380px) */
+@media(max-width:380px){
+  .card{padding:18px 14px;}
+  .card h1{font-size:18px;}
+  .btn{font-size:14px;padding:12px;}
+}
+
+
+/* ============================================================
+   FORMULARIOS EN HORIZONTAL (rejilla)
+   Los campos se reparten en columnas para que todo el formulario
+   quepa en pantalla sin tener que hacer scroll. En pantallas
+   pequeñas (celular) las columnas se apilan automáticamente.
+   ============================================================ */
+.card.card-media{max-width:860px;padding:30px 40px;}
+.card.card-ancha{max-width:1120px;padding:26px 40px;}
+.card.card-media h1,
+.card.card-ancha h1{margin-bottom:16px;}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));
+  gap:14px 24px;
+  align-items:end;
+}
+.form-grid.cols-1{--cols:1;}
+.form-grid.cols-2{--cols:2;}
+.form-grid.cols-3{--cols:3;}
+.form-grid.cols-4{--cols:4;}
+.form-grid.cols-5{--cols:5;}
+.form-grid .span-2{grid-column:span 2;}
+.form-grid .span-3{grid-column:span 3;}
+.form-grid .span-all{grid-column:1 / -1;}
+.form-grid .campo{margin:14px 0 6px;}
+.form-grid textarea{min-height:46px;height:46px;}
+
+/* Dos o más bloques lado a lado (ej.: Estudiante | Acudiente) */
+.paneles{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+  gap:0 44px;
+}
+.panel-form{min-width:0;}
+.titulo-panel{
+  font-size:13px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--naranja-oscuro);
+  padding-bottom:6px;border-bottom:2px solid #fdebd3;
+  margin:4px 0 0;
+}
+
+/* Lista de casillas (selección múltiple de alimentos) */
+.barra-checks{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 10px;}
+.barra-checks input[type=search]{
+  flex:1;min-width:220px;padding:10px 14px;border:1px solid #ddd;border-radius:10px;
+  font-family:inherit;font-size:14px;outline:none;
+}
+.barra-checks input[type=search]:focus{border-color:var(--naranja);}
+.barra-checks button{
+  padding:10px 16px;border:none;border-radius:10px;background:#f1f1f1;
+  font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;
+}
+.barra-checks button:hover{background:#fdebd3;}
+.contador-checks{font-size:13px;color:#777;margin-left:auto;}
+.lista-checks{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:10px;
+  max-height:44vh;overflow:auto;padding:4px 4px 8px;
+  margin-bottom:16px;
+}
+.check-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;border:1px solid #eee;border-radius:10px;
+  cursor:pointer;font-size:14px;transition:background .15s,border-color .15s;
+}
+.check-item:hover{background:#fff8ee;border-color:#f6c77a;}
+.check-item input{width:18px;height:18px;accent-color:var(--naranja);flex-shrink:0;}
+.check-item.ya{background:#f4f4f4;color:#888;cursor:default;}
+.check-item small{margin-left:auto;color:#999;font-size:11px;white-space:nowrap;}
+
+@media(max-width:900px){
+  .form-grid.cols-3,
+  .form-grid.cols-4,
+  .form-grid.cols-5{--cols:2;}
+  .card.card-media,
+  .card.card-ancha{padding:24px 24px;}
+}
+@media(max-width:640px){
+  .form-grid,
+  .form-grid.cols-2,
+  .form-grid.cols-3,
+  .form-grid.cols-4,
+  .form-grid.cols-5{--cols:1;}
+  .form-grid .span-2,
+  .form-grid .span-3{grid-column:auto;}
+  .card.card-media,
+  .card.card-ancha{padding:24px 18px;}
+  .paneles{grid-template-columns:1fr;}
+}
+
+/* Botones de acción en una sola fila */
+.acciones{display:flex;gap:12px;margin-top:18px;}
+.acciones .btn{flex:1;margin:0 !important;}
+@media(max-width:640px){.acciones{flex-direction:column;}}
+
+/* Fichas nutricionales en una fila */
+.info-fila{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;}
+@media(max-width:900px){.info-fila{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:640px){.info-fila{grid-template-columns:1fr;}}
