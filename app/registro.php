@@ -31,6 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (strlen($password) < 6) {
         $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
     }
+    if (empty($_POST['autorizacion_datos'])) {
+        $errores[] = 'Debes autorizar el tratamiento de tus datos personales para poder registrarte.';
+    }
 
     $nombreCompletoUsuario = '';
 
@@ -219,6 +222,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 .alerta{border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:18px;}
 .alerta-error{background:#fff3f3;border-left:4px solid #e53935;color:#b71c1c;}
 .alerta-exito{background:#f0fff4;border-left:4px solid #2e7d32;color:#1b5e20;}
+.autorizacion-datos{
+  display:flex;align-items:flex-start;gap:10px;
+  margin-top:18px;font-size:13px;line-height:1.5;
+  color:var(--texto-suave);cursor:pointer;
+}
+.autorizacion-datos input{
+  width:18px;height:18px;margin-top:2px;
+  accent-color:var(--naranja);flex-shrink:0;cursor:pointer;
+}
+.autorizacion-datos.autorizacion-error{color:var(--rojo-error);}
+#mensajeAutorizacion{margin:4px 0 0 28px;min-height:0;}
 .subtitulo-seccion{
   font-size:13px;font-weight:700;color:var(--naranja-oscuro);
   text-transform:uppercase;letter-spacing:0.5px;
@@ -375,6 +389,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </div>
 
+      <label class="autorizacion-datos" id="autorizacionDatos">
+        <input type="checkbox" name="autorizacion_datos" id="autorizacionDatosCheck" value="1" required
+               <?= !empty($_POST['autorizacion_datos']) ? 'checked' : '' ?>>
+        <span>
+          Autorizo de manera libre, previa, expresa e informada el tratamiento de los datos personales
+          suministrados en este formulario (propios y, en el caso de estudiantes, del menor y de su acudiente),
+          de acuerdo con la Ley 1581 de 2012 y el Decreto 1377 de 2013, para fines de gestión de la
+          alimentación escolar en NutriEscolar.
+        </span>
+      </label>
+      <small class="mensaje-error" id="mensajeAutorizacion"></small>
+
       <div class="acciones">
         <button type="submit" class="btn">Registrarse</button>
       </div>
@@ -412,6 +438,27 @@ function alternarCamposRol(){
   });
 }
 alternarCamposRol();
+
+// Autorización de tratamiento de datos personales (obligatoria para registrarse)
+(function(){
+  const form  = document.getElementById('formularioRegistro');
+  const check = document.getElementById('autorizacionDatosCheck');
+  const caja  = document.getElementById('autorizacionDatos');
+  const aviso = document.getElementById('mensajeAutorizacion');
+  if(!form || !check) return;
+
+  function limpiar(){ caja.classList.remove('autorizacion-error'); aviso.textContent=''; }
+
+  check.addEventListener('change', function(){ if(this.checked) limpiar(); });
+  form.addEventListener('submit', function(e){
+    if(!check.checked){
+      e.preventDefault();
+      caja.classList.add('autorizacion-error');
+      aviso.textContent = 'Debes autorizar el tratamiento de tus datos personales para continuar.';
+      check.focus();
+    }
+  });
+})();
 </script>
 </body>
 </html>
