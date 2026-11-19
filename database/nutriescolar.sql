@@ -15,6 +15,13 @@
 --  ConsumoAlimento y RecuperacionContrasena.
 --  Consumo y Reporte pertenecen al diagrama original y se conservan
 --  para una futura ampliación; el sitio actual no las utiliza.
+--
+--  ROLES: admin, estudiante, acudiente y profesor.
+--    · admin      -> registra qué se come y quiénes comen (ConsumoAlimento).
+--    · estudiante -> consulta su propio consumo y estadísticas.
+--    · acudiente  -> consulta el consumo y estadísticas de sus estudiantes
+--                    (Acudiente.UsuarioId enlaza la cuenta con el acudiente).
+--    · profesor   -> consulta menús e información nutricional.
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS `PROYECTO`
@@ -80,6 +87,9 @@ CREATE TABLE IF NOT EXISTS `Curso` (
 
 -- ------------------------------------------------------------
 -- Tabla: Acudiente
+-- EXTENSIÓN: `UsuarioId` (opcional) enlaza al acudiente con su propia
+-- cuenta de usuario (rol 'acudiente') para que pueda ver el consumo de
+-- los estudiantes a su cargo.
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Acudiente` (
   `AcudienteId`     INT         NOT NULL AUTO_INCREMENT,
@@ -88,8 +98,12 @@ CREATE TABLE IF NOT EXISTS `Acudiente` (
   `NumeroDocumento` BIGINT      NOT NULL,
   `Email`           VARCHAR(50) NULL,
   `Celular`         VARCHAR(20) NULL,
+  `UsuarioId`       INT         NULL,
   PRIMARY KEY (`AcudienteId`),
-  UNIQUE KEY `uq_acudiente_doc` (`NumeroDocumento`)
+  UNIQUE KEY `uq_acudiente_doc` (`NumeroDocumento`),
+  UNIQUE KEY `uq_acudiente_usuario` (`UsuarioId`),
+  CONSTRAINT `fk_acudiente_usuario`
+    FOREIGN KEY (`UsuarioId`) REFERENCES `Usuario` (`UsuarioId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
@@ -227,8 +241,9 @@ CREATE TABLE IF NOT EXISTS `RecuperacionContrasena` (
 
 -- ------------------------------------------------------------
 -- EXTENSIÓN: Tabla ConsumoAlimento
--- El propio usuario registra EXACTAMENTE qué alimentos comió cada día
--- (no todo el menú obligatoriamente); es la base del reporte nutricional.
+-- El ADMINISTRADOR registra qué alimentos comió cada estudiante cada día
+-- (no todo el menú obligatoriamente); es la base del reporte nutricional
+-- que luego consultan el estudiante y su acudiente.
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ConsumoAlimento` (
   `ConsumoAlimentoId` INT  NOT NULL AUTO_INCREMENT,
@@ -254,6 +269,25 @@ CREATE TABLE IF NOT EXISTS `ConsumoAlimento` (
 -- A) Columna Institucion en Usuario (versiones muy antiguas no la tenían)
 SET @c := (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE LOWER(TABLE_SCHEMA) = LOWER(DATABASE()) AND LOWER(TABLE_NAME) = 'usuario' AND LOWER(COLUMN_NAME) = 'institucion');
 SET @q := IF(@c = 0, 'ALTER TABLE `Usuario` ADD COLUMN `Institucion` VARCHAR(100) NULL', 'DO 0');
+PREPARE st FROM @q;
+EXECUTE st;
+DEALLOCATE PREPARE st;
+
+-- A2) Acudiente.UsuarioId (cuenta propia del acudiente): se agrega a bases antiguas
+SET @c := (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE LOWER(TABLE_SCHEMA) = LOWER(DATABASE()) AND LOWER(TABLE_NAME) = 'acudiente' AND LOWER(COLUMN_NAME) = 'usuarioid');
+SET @q := IF(@c = 0, 'ALTER TABLE `Acudiente` ADD COLUMN `UsuarioId` INT NULL', 'DO 0');
+PREPARE st FROM @q;
+EXECUTE st;
+DEALLOCATE PREPARE st;
+
+SET @c := (SELECT COUNT(*) FROM information_schema.STATISTICS WHERE LOWER(TABLE_SCHEMA) = LOWER(DATABASE()) AND LOWER(TABLE_NAME) = 'acudiente' AND LOWER(INDEX_NAME) = 'uq_acudiente_usuario');
+SET @q := IF(@c = 0, 'ALTER TABLE `Acudiente` ADD UNIQUE KEY `uq_acudiente_usuario` (`UsuarioId`)', 'DO 0');
+PREPARE st FROM @q;
+EXECUTE st;
+DEALLOCATE PREPARE st;
+
+SET @c := (SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE LOWER(TABLE_SCHEMA) = LOWER(DATABASE()) AND LOWER(TABLE_NAME) = 'acudiente' AND LOWER(CONSTRAINT_NAME) = 'fk_acudiente_usuario');
+SET @q := IF(@c = 0, 'ALTER TABLE `Acudiente` ADD CONSTRAINT `fk_acudiente_usuario` FOREIGN KEY (`UsuarioId`) REFERENCES `Usuario` (`UsuarioId`)', 'DO 0');
 PREPARE st FROM @q;
 EXECUTE st;
 DEALLOCATE PREPARE st;
@@ -322,10 +356,11 @@ DEALLOCATE PREPARE st;
 --  3) DATOS INICIALES (roles, administrador, cursos, alimentos PAE, menús)
 -- ============================================================
 
--- Roles usados por registro.php / inicio-sesion.php
+-- Roles usados por registro.php / inicio-sesion.php (admin, estudiante, acudiente, profesor)
 INSERT INTO `Rol` (`Nombre`) VALUES
   ('admin'),
   ('estudiante'),
+  ('acudiente'),
   ('profesor')
 ON DUPLICATE KEY UPDATE `Nombre` = VALUES(`Nombre`);
 
@@ -395,6 +430,22 @@ JOIN `Curso` c ON c.Nombre = '901'
 JOIN `Acudiente` ac ON ac.NumeroDocumento = 100200300
 WHERE u.Email = 'juan.perez@nutriescolar.edu.co'
   AND NOT EXISTS (SELECT 1 FROM `Estudiante` WHERE `UsuarioId` = u.UsuarioId);
+
+-- Usuario acudiente de prueba (padre de "juan perez")
+--   -> usuario: carlos perez  /  contraseña: acudiente123
+INSERT INTO `Usuario` (`Nombre`, `Email`, `Contraseña`, `RolId`, `Institucion`)
+SELECT 'carlos perez', 'carlos.perez@nutriescolar.edu.co',
+       '$2y$10$vmNRCwhCRyYBZofAqjrhxedvpARXQKPqrfTkSDjNmKPH2aoEPHUzK',
+       (SELECT RolId FROM Rol WHERE Nombre = 'acudiente'),
+       'Colegio Técnico Palermo'
+WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `Email` = 'carlos.perez@nutriescolar.edu.co');
+
+-- Se enlaza la cuenta con el acudiente (documento 100200300) para que vea a sus estudiantes
+UPDATE `Acudiente` ac
+JOIN `Usuario` u ON u.`Email` = 'carlos.perez@nutriescolar.edu.co'
+SET ac.`UsuarioId` = u.`UsuarioId`
+WHERE ac.`NumeroDocumento` = 100200300
+  AND ac.`UsuarioId` IS NULL;
 
 -- ------------------------------------------------------------
 -- Alimentos de ejemplo, basados en los grupos de alimentos y
@@ -496,8 +547,9 @@ WHERE NOT EXISTS (
   SELECT 1 FROM `MenuAlimento` ma WHERE ma.MenuId = m.MenuId AND ma.AlimentoId = a.AlimentoId
 );
 
--- Consumo de ejemplo para el usuario "juan perez" (para probar Consultar Consumo):
--- se registra que comió TODOS los alimentos del menú del lunes (2026-05-11).
+-- Consumo de ejemplo para el estudiante "juan perez" (para probar Consultar Consumo):
+-- se registra (como lo haría el administrador) que comió TODOS los alimentos del
+-- menú del lunes (2026-05-11).
 INSERT IGNORE INTO `ConsumoAlimento` (`UsuarioId`, `AlimentoId`, `Fecha`)
 SELECT u.UsuarioId, ma.AlimentoId, m.Fecha
 FROM `Usuario` u
