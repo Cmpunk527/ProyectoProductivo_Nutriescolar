@@ -3,7 +3,7 @@ require_once __DIR__ . '/includes/conexion.php';
 require_once __DIR__ . '/includes/sesion.php';
 
 if (estaLogueado()) {
-    header('Location: ' . (esAdmin() ? 'admin-panel.php' : 'ver-menu.php'));
+    header('Location: ' . paginaInicio());
     exit;
 }
 
@@ -43,11 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['usuario_nombre'] = $fila['Nombre'];
                 $_SESSION['usuario_rol']    = $fila['Rol'];
 
-                if ($fila['Rol'] === 'admin') {
-                    header('Location: admin-panel.php');
-                } else {
-                    header('Location: ver-menu.php');
-                }
+                header('Location: ' . paginaInicio());
                 exit;
             }
         } catch (PDOException $e) {
@@ -131,6 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <select name="rol" id="rol" required>
           <option value="" disabled <?= empty($_POST['rol']) ? 'selected' : '' ?>>Seleccione un rol</option>
           <option value="estudiante" <?= (($_POST['rol'] ?? '') === 'estudiante') ? 'selected' : '' ?>>Estudiante</option>
+          <option value="acudiente" <?= (($_POST['rol'] ?? '') === 'acudiente') ? 'selected' : '' ?>>Acudiente</option>
           <option value="profesor" <?= (($_POST['rol'] ?? '') === 'profesor') ? 'selected' : '' ?>>Profesor</option>
           <option value="admin" <?= (($_POST['rol'] ?? '') === 'admin') ? 'selected' : '' ?>>Administrador</option>
         </select>

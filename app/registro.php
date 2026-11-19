@@ -3,7 +3,7 @@ require_once __DIR__ . '/includes/conexion.php';
 require_once __DIR__ . '/includes/sesion.php';
 
 if (estaLogueado()) {
-    header('Location: ' . (esAdmin() ? 'admin-panel.php' : 'ver-menu.php'));
+    header('Location: ' . paginaInicio());
     exit;
 }
 
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($institucion === '' || !preg_match($patronLetras, $institucion)) {
         $errores[] = 'La institución educativa solo puede contener letras y espacios.';
     }
-    if (!in_array($rol, ['estudiante', 'profesor'], true)) {
+    if (!in_array($rol, ['estudiante', 'profesor', 'acudiente'], true)) {
         $errores[] = 'Selecciona un rol válido.';
     }
     if (strlen($password) < 6) {
@@ -43,6 +43,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errores[] = 'El nombre completo solo puede contener letras y espacios.';
         }
         $nombreCompletoUsuario = $nombreCompleto;
+    }
+
+    // ---- Datos exclusivos de Acudiente (cuenta propia para ver el consumo de sus estudiantes) ----
+    $acuNombres   = trim($_POST['acu_nombres'] ?? '');
+    $acuApellidos = trim($_POST['acu_apellidos'] ?? '');
+    $acuDocumento = trim($_POST['acu_documento'] ?? '');
+    $acuCelular   = trim($_POST['acu_celular'] ?? '');
+
+    if ($rol === 'acudiente') {
+        if ($acuNombres === '' || !preg_match($patronLetras, $acuNombres)) {
+            $errores[] = 'Los nombres del acudiente solo pueden contener letras y espacios.';
+        }
+        if ($acuApellidos === '' || !preg_match($patronLetras, $acuApellidos)) {
+            $errores[] = 'Los apellidos del acudiente solo pueden contener letras y espacios.';
+        }
+        if ($acuDocumento === '' || !preg_match($patronNumero, $acuDocumento)) {
+            $errores[] = 'El número de documento del acudiente solo puede contener números.';
+        }
+        if ($acuCelular !== '' && !preg_match($patronNumero, $acuCelular)) {
+            $errores[] = 'El celular del acudiente solo puede contener números.';
+        }
+        $nombreCompletoUsuario = trim($acuNombres . ' ' . $acuApellidos);
     }
 
     // ---- Datos exclusivos de Estudiante (tablas Estudiante / Curso / Acudiente) ----
@@ -109,6 +131,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errores[] = 'Ya existe una cuenta registrada con ese correo electrónico.';
             }
 
+            if ($rol === 'acudiente' && !$errores) {
+                $consultaAcu = $pdo->prepare('SELECT UsuarioId FROM Acudiente WHERE NumeroDocumento = :doc');
+                $consultaAcu->execute([':doc' => $acuDocumento]);
+                $filaAcu = $consultaAcu->fetch();
+                if ($filaAcu && $filaAcu['UsuarioId'] !== null) {
+                    $errores[] = 'Ya existe una cuenta de acudiente registrada con ese número de documento.';
+                }
+            }
+
             if ($rol === 'estudiante' && !$errores) {
                 $consultaDoc = $pdo->prepare('SELECT EstudianteId FROM Estudiante WHERE NumeroDocumento = :doc');
                 $consultaDoc->execute([':doc' => $documentoEstudiante]);
@@ -147,6 +178,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':institucion' => $institucion,
             ]);
             $usuarioId = (int) $pdo->lastInsertId();
+
+            if ($rol === 'acudiente') {
+                // Si el estudiante ya fue registrado con este documento de acudiente, la cuenta
+                // se vincula a ese acudiente (y por eso verá a sus estudiantes); si no, se crea.
+                $consultaAcu = $pdo->prepare('SELECT AcudienteId, UsuarioId FROM Acudiente WHERE NumeroDocumento = :doc');
+                $consultaAcu->execute([':doc' => $acuDocumento]);
+                $filaAcu = $consultaAcu->fetch();
+
+                if ($filaAcu) {
+                    if ($filaAcu['UsuarioId'] !== null) {
+                        throw new RuntimeException('Ya existe una cuenta de acudiente registrada con ese número de documento.');
+                    }
+                    $vincular = $pdo->prepare(
+                        'UPDATE Acudiente SET UsuarioId = :uid, Email = COALESCE(Email, :email)
+                         WHERE AcudienteId = :id AND UsuarioId IS NULL'
+                    );
+                    $vincular->execute([':uid' => $usuarioId, ':email' => $email, ':id' => $filaAcu['AcudienteId']]);
+                } else {
+                    $insertarAcudiente = $pdo->prepare(
+                        'INSERT INTO Acudiente (Nombre, Apellido, NumeroDocumento, Email, Celular, UsuarioId)
+                         VALUES (:nombre, :apellido, :documento, :email, :celular, :uid)'
+                    );
+                    $insertarAcudiente->execute([
+                        ':nombre'    => $acuNombres,
+                        ':apellido'  => $acuApellidos,
+                        ':documento' => $acuDocumento,
+                        ':email'     => $email,
+                        ':celular'   => $acuCelular !== '' ? $acuCelular : null,
+                        ':uid'       => $usuarioId,
+                    ]);
+                }
+            }
 
             if ($rol === 'estudiante') {
                 // Se busca un acudiente existente con ese documento, o se crea uno nuevo
@@ -290,6 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <select name="rol" id="rolSelect" required onchange="alternarCamposRol()">
                 <option value="" disabled <?= $rolActual === '' ? 'selected' : '' ?>>Seleccionar rol</option>
                 <option value="estudiante" <?= $rolActual === 'estudiante' ? 'selected' : '' ?>>Estudiante</option>
+                <option value="acudiente" <?= $rolActual === 'acudiente' ? 'selected' : '' ?>>Acudiente</option>
                 <option value="profesor" <?= $rolActual === 'profesor' ? 'selected' : '' ?>>Profesor</option>
               </select>
             </div>
@@ -331,6 +395,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <input type="text" name="celular_estudiante" inputmode="numeric" data-validar="numeros"
                      value="<?= htmlspecialchars($_POST['celular_estudiante'] ?? '') ?>">
               <label>Celular del estudiante (opcional)</label>
+            </div>
+
+
+            <!-- Solo ACUDIENTE (cuenta propia) -->
+            <div class="campo solo-acudiente">
+              <input type="text" name="acu_nombres" data-validar="letras" autocomplete="given-name"
+                     value="<?= htmlspecialchars($_POST['acu_nombres'] ?? '') ?>">
+              <label>Nombres</label>
+            </div>
+            <div class="campo solo-acudiente">
+              <input type="text" name="acu_apellidos" data-validar="letras" autocomplete="family-name"
+                     value="<?= htmlspecialchars($_POST['acu_apellidos'] ?? '') ?>">
+              <label>Apellidos</label>
+            </div>
+            <div class="campo solo-acudiente">
+              <input type="text" name="acu_documento" inputmode="numeric" data-validar="numeros"
+                     value="<?= htmlspecialchars($_POST['acu_documento'] ?? '') ?>">
+              <label>Documento del acudiente</label>
+            </div>
+            <div class="campo solo-acudiente">
+              <input type="text" name="acu_celular" inputmode="numeric" data-validar="numeros"
+                     value="<?= htmlspecialchars($_POST['acu_celular'] ?? '') ?>">
+              <label>Celular (opcional)</label>
             </div>
 
           </div>
@@ -420,6 +507,7 @@ function alternarCamposRol(){
   const rol = document.getElementById('rolSelect').value;
   const esEst  = rol === 'estudiante';
   const esProf = rol === 'profesor';
+  const esAcu  = rol === 'acudiente';
 
   const bloqueProfesor = document.getElementById('bloqueProfesor');
   const panelAcudiente = document.getElementById('panelAcudiente');
@@ -428,13 +516,17 @@ function alternarCamposRol(){
   bloqueProfesor.style.display = esProf ? '' : 'none';
   panelAcudiente.style.display = esEst ? '' : 'none';
   document.querySelectorAll('.solo-estudiante').forEach(b => { b.style.display = esEst ? '' : 'none'; });
-  titulo.textContent = esEst ? 'Datos del estudiante' : (esProf ? 'Datos del profesor' : 'Datos personales');
+  document.querySelectorAll('.solo-acudiente').forEach(b => { b.style.display = esAcu ? '' : 'none'; });
+  titulo.textContent = esEst ? 'Datos del estudiante' : (esProf ? 'Datos del profesor' : (esAcu ? 'Datos del acudiente' : 'Datos personales'));
 
   // Solo son obligatorios los campos del rol elegido (los opcionales nunca)
   const opcionales = ['email_acudiente', 'celular_acudiente', 'celular_estudiante'];
   bloqueProfesor.querySelectorAll('input').forEach(c => { c.required = esProf; });
   document.querySelectorAll('.solo-estudiante input, .solo-estudiante select, #panelAcudiente input').forEach(c => {
     c.required = esEst && !opcionales.includes(c.name);
+  });
+  document.querySelectorAll('.solo-acudiente input').forEach(c => {
+    c.required = esAcu && c.name !== 'acu_celular';
   });
 }
 alternarCamposRol();

@@ -577,10 +577,12 @@ footer small{
   <nav>
     <a href="ver-menu.php">Ver menú</a>
     <a href="consultar-menu.php">Consultar menú</a>
-    <a href="consultar-consumo.php">Mi consumo</a>
+    <?php if (!estaLogueado() || puedeConsultarConsumo()): ?>
+      <a href="consultar-consumo.php"><?= htmlspecialchars(etiquetaConsumo()) ?></a>
+    <?php endif; ?>
     <a href="informacion-nutricional.php">Nutrición</a>
     <?php if (estaLogueado()): ?>
-      <a href="<?= esAdmin() ? 'admin-panel.php' : 'ver-menu.php' ?>" class="btn-ingresar">Hola, <?= htmlspecialchars(nombreUsuarioActual()) ?></a>
+      <a href="<?= paginaInicio() ?>" class="btn-ingresar">Hola, <?= htmlspecialchars(nombreUsuarioActual()) ?></a>
       <a href="cerrar-sesion.php" class="btn-ingresar">Cerrar sesión</a>
     <?php else: ?>
       <a href="inicio-sesion.php" class="btn-ingresar">Ingresar</a>
@@ -711,11 +713,13 @@ footer small{
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       Información nutricional
     </a>
+    <?php if (!estaLogueado() || puedeConsultarConsumo()): ?>
     <a href="consultar-consumo.php" class="btn-acceso">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Mi consumo
+      <?= htmlspecialchars(etiquetaConsumo()) ?>
     </a>
-    <a href="<?= estaLogueado() ? (esAdmin() ? 'admin-panel.php' : 'ver-menu.php') : 'inicio-sesion.php' ?>" class="btn-acceso btn-acceso-secundario">
+    <?php endif; ?>
+    <a href="<?= estaLogueado() ? paginaInicio() : 'inicio-sesion.php' ?>" class="btn-acceso btn-acceso-secundario">
       <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
       <?= estaLogueado() ? (esAdmin() ? 'Ir al panel admin' : 'Iniciar sesión') : 'Iniciar sesión' ?>
     </a>

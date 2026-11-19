@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/conexion.php';
 require_once __DIR__ . '/includes/sesion.php';
+require_once __DIR__ . '/includes/nav.php';
 requerirLogin();
 
 $busqueda  = trim($_GET['alimento'] ?? '');
@@ -63,11 +64,7 @@ if (isset($_GET['buscar'])) {
     <span></span><span></span><span></span>
   </button>
   <div class="nav-menu" id="navMenu">
-    <a href="ver-menu.php">Ver menú</a>
-    <a href="registrar-consumo.php">Registrar consumo</a>
-    <a href="consultar-consumo.php">Mi consumo</a>
-    <a href="consultar-menu.php">Consultar menú</a>
-    <a href="cerrar-sesion.php" class="btn-salir">Cerrar sesión</a>
+    <?php renderNavUsuario(); ?>
   </div>
 </nav>
 

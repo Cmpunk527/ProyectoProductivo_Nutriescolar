@@ -89,6 +89,18 @@ requerirAdmin();
         </div>
         <span>Modificar menú</span>
       </a>
+      <a href="registrar-consumo.php" class="panel-btn">
+        <div class="panel-icono">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <span>Registrar consumo</span>
+      </a>
+      <a href="consultar-consumo.php" class="panel-btn">
+        <div class="panel-icono">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <span>Consultar consumo</span>
+      </a>
     </div>
   </div>
 </section>
