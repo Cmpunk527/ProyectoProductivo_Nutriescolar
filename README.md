@@ -85,7 +85,7 @@ El sistema se probó de punta a punta (registro, inicio de sesión por rol, CRUD
 
 ## Documentación
 
-- [Documento Base](docs/Documento Proyecto Productivo Nutriescolar.pdf).
+- [Documento Base](docs/Documento_Proyecto_Productivo_Nutriescolar.pdf).
 - [Manual Técnico](docs/Manual_Tecnico.docx)
 - [Manual de Usuario](docs/Manual_Usuario.docx)
 
