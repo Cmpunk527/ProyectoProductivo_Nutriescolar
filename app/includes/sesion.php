@@ -25,6 +25,38 @@ function esAdmin(): bool
     return estaLogueado() && ($_SESSION['usuario_rol'] ?? '') === 'admin';
 }
 
+/** Rol del usuario logueado: 'admin' | 'estudiante' | 'acudiente' | 'profesor' (o cadena vacía) */
+function rolActual(): string
+{
+    return estaLogueado() ? (string) ($_SESSION['usuario_rol'] ?? '') : '';
+}
+
+function esEstudiante(): bool { return rolActual() === 'estudiante'; }
+function esAcudiente(): bool  { return rolActual() === 'acudiente'; }
+function esProfesor(): bool   { return rolActual() === 'profesor'; }
+
+/** Roles que pueden consultar el consumo y las estadísticas nutricionales */
+function puedeConsultarConsumo(): bool
+{
+    return in_array(rolActual(), ['admin', 'estudiante', 'acudiente'], true);
+}
+
+/** Texto del acceso a "consumo" según el rol */
+function etiquetaConsumo(): string
+{
+    switch (rolActual()) {
+        case 'admin':     return 'Consultar consumo';
+        case 'acudiente': return 'Consumo del estudiante';
+        default:          return 'Mi consumo';
+    }
+}
+
+/** Página principal de cada rol (a donde se redirige tras iniciar sesión) */
+function paginaInicio(): string
+{
+    return esAdmin() ? 'admin-panel.php' : 'ver-menu.php';
+}
+
 /** Nombre del usuario logueado (o cadena vacía) */
 function nombreUsuarioActual(): string
 {
@@ -54,6 +86,21 @@ function requerirAdmin(string $redireccion = 'inicio-sesion.php'): void
     if (!esAdmin()) {
         // Usuario con sesión pero sin rol admin: se le devuelve a su pantalla principal
         header('Location: ver-menu.php');
+        exit;
+    }
+}
+
+/**
+ * Obliga a que la sesión activa sea de alguno de los roles indicados.
+ * Si el usuario tiene sesión pero otro rol, vuelve a su página principal.
+ *
+ *     requerirRol(['admin', 'estudiante', 'acudiente']);
+ */
+function requerirRol(array $roles, string $redireccion = 'inicio-sesion.php'): void
+{
+    requerirLogin($redireccion);
+    if (!in_array(rolActual(), $roles, true)) {
+        header('Location: ' . paginaInicio());
         exit;
     }
 }

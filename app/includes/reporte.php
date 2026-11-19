@@ -60,7 +60,7 @@ function generarEvaluacionConsumo(array $totales): array
  * Arma el HTML del correo con el detalle del consumo y su evaluación,
  * y lo envía usando includes/correo.php (enviarCorreo()).
  */
-function enviarReporteConsumo(string $destino, string $nombreUsuario, string $fecha, array $alimentos, array $evaluacion): bool
+function enviarReporteConsumo(string $destino, string $nombreUsuario, string $fecha, array $alimentos, array $evaluacion, string $nombreEstudiante = ''): bool
 {
     $coloresEstado = ['bajo' => '#e53935', 'adecuado' => '#2e7d32', 'alto' => '#e53935'];
     $etiquetasEstado = ['bajo' => 'Bajo', 'adecuado' => 'Adecuado', 'alto' => 'Alto'];
@@ -96,7 +96,7 @@ function enviarReporteConsumo(string $destino, string $nombreUsuario, string $fe
     <div style="font-family:Nunito,Arial,sans-serif;max-width:560px;margin:auto;">
       <h2 style="color:#f39c12;">NutriEscolar — Reporte nutricional</h2>
       <p>Hola ' . htmlspecialchars($nombreUsuario) . ',</p>
-      <p>Este es el reporte del consumo registrado el <strong>' . htmlspecialchars($fecha) . '</strong>:</p>
+      <p>Este es el reporte del consumo registrado' . ($nombreEstudiante !== '' ? ' de <strong>' . htmlspecialchars($nombreEstudiante) . '</strong>' : '') . ' el <strong>' . htmlspecialchars($fecha) . '</strong>:</p>
       <p><strong>Alimentos consumidos:</strong> ' . htmlspecialchars($listaAlimentos) . '</p>
       <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
         <thead>
